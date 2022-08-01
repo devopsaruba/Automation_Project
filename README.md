@@ -1,5 +1,5 @@
 # Automation_Project
-### This project is about creation AWS infra for hosting a WEBSERVER
+### This project is about creation of  AWS infra for hosting a WEBSERVER
 ### Hosted WEBSERVER will push all the access logs to S3 bucket in a PERIODIC fashion
 ### Logs collected at EC2 instance will be deleted using LOGTOTATE mechanism
 
