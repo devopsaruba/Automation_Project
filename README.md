@@ -10,3 +10,6 @@
 # EC2: The IAS/PAS to HOST or implement the Application:WEBSERBVER
 
 ### FInally access the WEBSERVER using CURL or HTTP to generate access logs
+
+# Creating BookKeping logic to update the inventopry.html to have data as below for every S3 copy:
+<img width="491" alt="image" src="https://user-images.githubusercontent.com/98635422/182234258-ff74c296-eb2f-446f-abca-7ab232acc90e.png">
