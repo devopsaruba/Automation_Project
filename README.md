@@ -13,3 +13,5 @@
 
 # Creating BookKeping logic to update the inventopry.html to have data as below for every S3 copy:
 <img width="491" alt="image" src="https://user-images.githubusercontent.com/98635422/182234258-ff74c296-eb2f-446f-abca-7ab232acc90e.png">
+
+#Scheduling the script using CRON every day to see populate the inventory for access details. 
