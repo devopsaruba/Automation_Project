@@ -2,15 +2,17 @@
 
 s3bucketName=upgrad-samarthi
 myname=sumansamarthi
+#apache2 package update
 update_package(){
 	echo "update_package:START"
 	sudo apt update -y
 	echo "Updating ubuntu linux finished"
 }
 
+#apache installation
 apache_installation(){
 	serviceName=$1
-	if [ systemctl --all --type service  | grep -q "$serviceName" ]
+	if systemctl --all --type service | grep -q apache2 
 	then
 		echo "'$serviceName': is already installed!!!"
 	else
@@ -21,9 +23,11 @@ apache_installation(){
 	fi	
 }
 
+#apache start
 apache_start(){
-	serviceNam=$1
-	if sudo systemctl is-active "$serviceName"
+	serviceName=$1
+	cmd=`sudo systemctl is-active '$serviceName'`
+	if [[ $cmd == "active" ]]
 	then
 		echo "'$serviceName':IS RUNNING"
 	else
@@ -32,9 +36,12 @@ apache_start(){
 		echo "'$serviceName':STARTED"
 	fi			
 }
+
+#Servcie enabled or disabled
 apache_enable(){
 	serviceName=$1
-	if sudo systemctl is-enabled "$serviceName"
+	cmd=`sudo systemctl is-enabled "$serviceName"`
+	if [[ $cmd == 'enabled' ]]
 	then
 		echo "$serviceName:ENABLED ALREADY"
 	else
@@ -43,6 +50,8 @@ apache_enable(){
 	fi	
 		
 }
+
+#Archiving LOGS
 archive_logs(){
 	echo "LOGS:Archive STARTED"
 	#time=`date +%m-%d-%Y-%H-%M-%S`
@@ -53,44 +62,28 @@ archive_logs(){
 	echo "LOGS:Archive COMPLETED"
 }
 
+#Copying tye archived LOGS
 copy_archive(){
 	echo "S3:COPYING:STARETD";
 	bucketName=$1
 	aws s3 cp /tmp/$filename s3://$bucketName/$filename;
 }
-cron_job(){
-        cron_file='/etc/cron.d/automation'
-        if test -f $cron_file
-        then
-                echo "CRON: File Present ALREADY"
-        else
-                echo "CRON: File not Present CREATING"
-                sudo touch ${cron_file}
-		sudo echo "SHELL=/bin/bash">${cron_file}
-		sudo echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin">>${cron_file}
-                sudo echo "5 * * * * root /root/Automation_Project/automation.sh">>${cron_file}
-                echo "CRON: File CREATED "
-        fi
-}
 
+#Default RUN Levele apache service RUN
 apache_runlevel_enabled(){
         serviceName=$1
         cmd=$(systemctl status $serviceName | grep -i Active)
         if [[ $cmd == *"active (running)"* ]]
         then
-                echo "'$serviceName' ACTIVE!!!!!"
-        #elif [[ $cmd ]]
-        #then
-#               echo "'$serviceName': START ENABLING AT BOOT LEVEL"
-#               update-rc.d $serviceName defaults
-#               echo "'$serviceName': END ENABLING AT BOOT LEVEL"
+                echo "'$serviceName' IS ACTIVE!!!!!"
         else
                 echo "WARNING : 'serviceName' NOT at BOOT LEVEL"
-                update-rc.d $serviceName defaults
+		systemctl start $serviceName
 		echo "WARNING : 'serviceName' UPDATED to RUN at the BOOT LEVEL"
         fi
 }
 
+#Updating the Inventory.html
 update_inventory(){
         inventory_file=/var/www/html/inventory.html
         logType="http-logs"
@@ -118,8 +111,10 @@ update_inventory(){
         fi
 
 }
+
+#Cron job for scheduling
 cron_job(){
-cron_file='/etc/cron.d/automation'
+	cron_file='/etc/cron.d/automation'
         if test -f $cron_file
         then
                 echo "CRON: File Present ALREADY"
@@ -127,13 +122,13 @@ cron_file='/etc/cron.d/automation'
                 echo "CRON: File not Present CREATING"
                 sudo touch ${cron_file}
                 sudo echo "SHELL=/bin/bash">${cron_file}
-                sudo echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin">>${cron_file}
-                sudo echo "5 * * * * root /root/Automation_Project/automation.sh">>${cron_file}
+                sudo echo "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin">>${cron_file}
+		sudo echo "0 0 * * * root /root/Automation_Project/automation.sh">>${cron_file}
                 echo "CRON: File CREATED "
         fi
 }
 
-
+#MAIN PROGRAM
 my_program(){
 	echo "my_program:START";	
 	update_package;
@@ -149,13 +144,10 @@ my_program(){
 	#S3 Bucket Name
 	bucketName=$s3bucketName
 	copy_archive "$bucketName"
-<<<<<<< HEAD
-=======
 	update_inventory
->>>>>>> 8850f931cac4027b29bd249865b4135c55ebeb61
 	cron_job
 	echo "my_program:END";
 }
 echo "Program STARTS"
 my_program;
-echo "Program END's""
+echo "Program END's"
