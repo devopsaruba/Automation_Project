@@ -104,6 +104,21 @@ update_inventory(){
         fi
 
 }
+cron_job(){
+cron_file='/etc/cron.d/automation'
+        if test -f $cron_file
+        then
+                echo "CRON: File Present ALREADY"
+        else
+                echo "CRON: File not Present CREATING"
+                sudo touch ${cron_file}
+                sudo echo "SHELL=/bin/bash">${cron_file}
+                sudo echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin">>${cron_file}
+                sudo echo "5 * * * * root /root/Automation_Project/automation.sh">>${cron_file}
+                echo "CRON: File CREATED "
+        fi
+}
+
 
 my_program(){
 	echo "my_program:START";	
@@ -121,6 +136,7 @@ my_program(){
 	bucketName=$s3bucketName
 	copy_archive "$bucketName"
 	update_inventory
+	cron_job
 	echo "my_program:END";
 }
 
